@@ -1,0 +1,64 @@
+# ============================================================
+# chrislll-blog Docker Compose 编排
+# 适用场景：Docker 化部署（可选，替代 PM2 直接运行）
+# 用法：docker compose up -d
+# ============================================================
+
+services:
+  # 后端 API
+  blog-api:
+    build:
+      context: ./blog-api
+      dockerfile: Dockerfile
+    container_name: chrislll-api
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - UPLOAD_DIR=./uploads
+      - PORT=3000
+    volumes:
+      - api-uploads:/app/uploads
+    networks:
+      - chrislll-net
+
+  # 前端 Nuxt SSR
+  blog-web:
+    build:
+      context: ./blog-web
+      dockerfile: Dockerfile
+    container_name: chrislll-web
+    restart: unless-stopped
+    environment:
+      - API_BASE_URL=http://blog-api:3000
+    depends_on:
+      - blog-api
+    networks:
+      - chrislll-net
+
+  # Caddy 反向代理（替代手动安装 Caddy）
+  caddy:
+    image: caddy:2-alpine
+    container_name: chrislll-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker-compose/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - blog-api
+      - blog-web
+    networks:
+      - chrislll-net
+
+volumes:
+  api-uploads:
+  caddy-data:
+  caddy-config:
+
+networks:
+  chrislll-net:
+    driver: bridge

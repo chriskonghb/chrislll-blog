@@ -1,0 +1,97 @@
+# ============================================================
+# chrislll-blog Caddyfile（宿主机直接安装 Caddy 用）
+#
+# ===== 方案 A：Caddy 自动 HTTPS（Let's Encrypt）=====
+# 前提：域名已完成 ICP 备案，80 和 443 端口可正常访问
+# Caddy 会自动申请 Let's Encrypt 证书并续签
+# 如果自动申请失败（网络不稳定），请切换到方案 B
+#
+# ===== 方案 B：阿里云免费 SSL 证书（手动配置）=====
+# 1. 阿里云控制台 → SSL证书 → 免费证书 → 申请（绑定 chrislll.cn）
+# 2. 证书签发后，下载 Nginx 格式证书文件（.pem 和 .key）
+# 3. 上传到服务器 /etc/caddy/ssl/ 目录：
+#    mkdir -p /etc/caddy/ssl
+#    scp chrislll.cn.pem chrislll.cn.key root@服务器IP:/etc/caddy/ssl/
+# 4. 把下方方案 A 的站点块注释掉，取消方案 B 的注释
+# ============================================================
+
+# ---------- 方案 A：Caddy 自动 HTTPS（推荐尝试） ----------
+chrislll.cn, www.chrislll.cn {
+    # Nuxt 静态资源（长期缓存）
+    handle /_nuxt/* {
+        root * /www/wwwroot/chrislll-blog/blog-web/.output/public
+        file_server {
+            precompressed br gzip
+        }
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    # 上传的图片（从 Express 后端的 uploads 目录提供）
+    handle /uploads/* {
+        root * /www/wwwroot/chrislll-blog/blog-api/uploads
+        file_server
+    }
+
+    # API 请求转发到 Express 后端（端口 3000）
+    handle /api/* {
+        reverse_proxy localhost:3000 {
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # 其他所有请求交给 Nuxt SSR 前端（端口 3001）
+    handle {
+        reverse_proxy localhost:3001 {
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    encode gzip
+}
+
+# ---------- 方案 B：使用阿里云免费 SSL 证书（手动 TLS） ----------
+# 如果方案 A 自动申请证书失败，注释掉上方方案 A 的站点块，
+# 取消下方注释并填入你的证书路径：
+#
+# http://chrislll.cn, http://www.chrislll.cn {
+#     redir https://{host}{uri} permanent
+# }
+#
+# https://chrislll.cn, https://www.chrislll.cn {
+#     tls /etc/caddy/ssl/chrislll.cn.pem /etc/caddy/ssl/chrislll.cn.key
+#
+#     handle /_nuxt/* {
+#         root * /www/wwwroot/chrislll-blog/blog-web/.output/public
+#         file_server {
+#             precompressed br gzip
+#         }
+#         header Cache-Control "public, max-age=31536000, immutable"
+#     }
+#
+#     handle /uploads/* {
+#         root * /www/wwwroot/chrislll-blog/blog-api/uploads
+#         file_server
+#     }
+#
+#     handle /api/* {
+#         reverse_proxy localhost:3000 {
+#             header_up X-Real-IP {remote}
+#             header_up X-Forwarded-For {remote}
+#             header_up X-Forwarded-Proto {scheme}
+#         }
+#     }
+#
+#     handle {
+#         reverse_proxy localhost:3001 {
+#             header_up X-Real-IP {remote}
+#             header_up X-Forwarded-For {remote}
+#             header_up X-Forwarded-Proto {scheme}
+#         }
+#     }
+#
+#     encode gzip
+# }

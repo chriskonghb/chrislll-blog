@@ -1,0 +1,59 @@
+# chrislll-blog Docker Compose 版 Caddyfile
+# 注意：此文件用于 docker-compose.yml 中的 Caddy 容器
+# 服务名解析：blog-api:3000, blog-web:3000
+#
+# Docker 环境下，Caddy 的 Let's Encrypt HTTP-01 验证通过容器端口映射完成，
+# 同样建议先尝试方案 A，失败后切换到方案 B。
+
+# ---------- 方案 A：Caddy 自动 HTTPS ----------
+chrislll.cn, www.chrislll.cn {
+    handle /_nuxt/* {
+        reverse_proxy blog-web:3000
+    }
+    handle /uploads/* {
+        reverse_proxy blog-api:3000
+    }
+    handle /api/* {
+        reverse_proxy blog-api:3000 {
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    handle {
+        reverse_proxy blog-web:3000 {
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+    encode gzip
+}
+
+# ---------- 方案 B：使用阿里云 SSL 证书（手动 TLS） ----------
+# 挂载证书到 caddy 容器的 /etc/caddy/ssl/ 目录，然后取消下方注释：
+#
+# http://chrislll.cn, http://www.chrislll.cn {
+#     redir https://{host}{uri} permanent
+# }
+#
+# https://chrislll.cn, https://www.chrislll.cn {
+#     tls /etc/caddy/ssl/chrislll.cn.pem /etc/caddy/ssl/chrislll.cn.key
+#     handle /_nuxt/* { reverse_proxy blog-web:3000 }
+#     handle /uploads/* { reverse_proxy blog-api:3000 }
+#     handle /api/* {
+#         reverse_proxy blog-api:3000 {
+#             header_up X-Real-IP {remote}
+#             header_up X-Forwarded-For {remote}
+#             header_up X-Forwarded-Proto {scheme}
+#         }
+#     }
+#     handle {
+#         reverse_proxy blog-web:3000 {
+#             header_up X-Real-IP {remote}
+#             header_up X-Forwarded-For {remote}
+#             header_up X-Forwarded-Proto {scheme}
+#         }
+#     }
+#     encode gzip
+# }
