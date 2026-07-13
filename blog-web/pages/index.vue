@@ -105,7 +105,7 @@
             </div>
           </div>
 
-          <div v-else-if="posts.length" class="space-y-6">
+          <div v-else-if="posts && posts.length" class="space-y-6">
             <PostCard v-for="(post, idx) in posts" :key="post.id" :post="post" :style="{ animationDelay: `${idx * 100}ms` }" class="animate-fade-in-up" />
           </div>
 
@@ -137,7 +137,7 @@ useHead({
 });
 
 const { data: posts, pending } = await useAsyncData('home-posts', () =>
-  $api('/posts?limit=6').then(r => r.data)
+  $api('/posts?limit=6').then(r => r.data).catch(() => [])
 );
 
 // 获取统计数据

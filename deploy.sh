@@ -28,12 +28,12 @@ WEB_DIR="${PROJECT_DIR}/blog-web"
 DOMAIN="chrislll.cn"
 WWW_DOMAIN="www.chrislll.cn"
 
-# 数据库配置（请替换为你的实际值）
-DB_HOST=""           # 阿里云 MySQL 内网地址，如 rm-xxx.mysql.rds.aliyuncs.com
+# 数据库配置（本地 MySQL 时默认值即可，RDS 时替换为实际值）
+DB_HOST="127.0.0.1"  # 本地 MySQL 填 127.0.0.1，RDS 填内网地址如 rm-xxx.mysql.rds.aliyuncs.com
 DB_PORT="3306"
 DB_NAME="chrislll_blog"
-DB_USER=""           # 数据库用户名
-DB_PASS=""           # 数据库密码
+DB_USER="chrislll_user"  # 数据库用户名
+DB_PASS="841109"         # 数据库密码
 
 # ============================================================
 # 前置检查

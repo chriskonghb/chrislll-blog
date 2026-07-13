@@ -174,13 +174,13 @@ mysql -u root -p
 CREATE DATABASE chrislll_blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 # 创建专用数据库账号（不要直接用 root）
-CREATE USER 'chrislll_user'@'localhost' IDENTIFIED BY '你的强密码';
+CREATE USER 'chrislll_user'@'localhost' IDENTIFIED BY '841109';
 GRANT ALL PRIVILEGES ON chrislll_blog.* TO 'chrislll_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
 
-> 记录用户名 `chrislll_user` 和密码，后续步骤 6 配置 `.env` 时需要用到。
+> 记录用户名 `chrislll_user` 和密码 `841109`，后续步骤 6 配置 `.env` 时需要用到。
 
 ### 步骤 3：创建网站
 
@@ -226,16 +226,12 @@ npm run build
 
 # 创建环境变量文件
 cat > .env << 'EOF'
-DATABASE_URL="mysql://数据库用户名:数据库密码@MySQL地址:3306/chrislll_blog"
-JWT_SECRET="这里填写一个随机长字符串，可用 openssl rand -base64 64 生成"
+DATABASE_URL="mysql://chrislll_user:841109@127.0.0.1:3306/chrislll_blog"
+JWT_SECRET="$(openssl rand -base64 64)"
 UPLOAD_DIR="./uploads"
 PORT=3000
 EOF
 chmod 600 .env
-
-# DATABASE_URL 填写示例：
-#   使用阿里云 RDS：mysql://chrislll_user:密码@rm-xxx.mysql.rds.aliyuncs.com:3306/chrislll_blog
-#   使用本地 MySQL：mysql://chrislll_user:密码@127.0.0.1:3306/chrislll_blog
 
 # 创建必要目录
 mkdir -p uploads logs
@@ -437,7 +433,7 @@ npm run build
 
 # 创建生产环境变量（替换为实际值）
 cat > .env << 'EOF'
-DATABASE_URL="mysql://数据库用户名:数据库密码@MySQL内网地址:3306/chrislll_blog"
+DATABASE_URL="mysql://chrislll_user:841109@127.0.0.1:3306/chrislll_blog"
 JWT_SECRET="$(openssl rand -base64 64)"
 UPLOAD_DIR="./uploads"
 PORT=3000

@@ -33,6 +33,7 @@ module.exports = {
         NODE_ENV: 'production',
         HOST: '0.0.0.0',
         PORT: 3001,
+        NUXT_PUBLIC_API_BASE: 'http://127.0.0.1:3000/api',
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       error_file: '/www/wwwroot/chrislll-blog/blog-web/logs/error.log',
