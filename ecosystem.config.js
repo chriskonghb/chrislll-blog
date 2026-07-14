@@ -16,6 +16,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
+        UPLOAD_DIR: '/www/wwwroot/chrislll-blog/blog-api/uploads',
       },
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       error_file: '/www/wwwroot/chrislll-blog/blog-api/logs/error.log',

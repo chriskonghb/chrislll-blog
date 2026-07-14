@@ -23,7 +23,11 @@ const route = useRoute();
 const router = useRouter();
 
 const { data: post } = await useAsyncData(`post-edit-${route.params.id}`, () =>
-  $api(`/posts/admin/list`).then(r => r.data.find(p => p.id === parseInt(route.params.id)))
+  $api(`/posts/admin/list`).then(r => {
+    const found = r.data.find(p => p.id === parseInt(route.params.id));
+    if (!found) throw new Error('文章不存在');
+    return found;
+  })
 );
 
 const handleSave = async (data) => {
@@ -34,7 +38,14 @@ const handleSave = async (data) => {
     });
     router.push('/admin/posts');
   } catch (err) {
-    alert(err?.data?.message || '更新文章失败');
+    // 显示具体的验证错误信息
+    const errors = err?.data?.errors;
+    if (errors && errors.length > 0) {
+      const msg = errors.map(e => `${e.path?.join('.')}: ${e.message}`).join('\n');
+      alert('数据验证失败：\n' + msg);
+    } else {
+      alert(err?.data?.message || '更新文章失败');
+    }
   }
 };
 </script>

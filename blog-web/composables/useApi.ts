@@ -1,6 +1,10 @@
 export const useApi = () => {
   const config = useRuntimeConfig();
-  const baseURL = config.public.apiBase;
+  // SSR 时需要完整的 URL 才能访问后端 API
+  // 如果 NUXT_PUBLIC_API_BASE 未设置，SSR 默认使用 127.0.0.1:3000
+  const baseURL = process.server
+    ? (config.public.apiBase.startsWith('http') ? config.public.apiBase : 'http://127.0.0.1:3000/api')
+    : config.public.apiBase;
 
   const getToken = () => {
     if (process.client) {

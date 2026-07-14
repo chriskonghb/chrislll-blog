@@ -183,7 +183,7 @@ router.post('/', authenticate, async (req: AuthRequest, res, next) => {
         content: data.content,
         coverImage: data.coverImage,
         status: data.status || 'DRAFT',
-        publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
+        publishedAt: data.status === 'PUBLISHED' ? (data.publishedAt ? new Date(data.publishedAt) : new Date()) : null,
         authorId: req.user!.id,
         categoryId: data.categoryId,
         tags: data.tagIds ? {
@@ -226,7 +226,9 @@ router.put('/:id', authenticate, async (req: AuthRequest, res, next) => {
         content: data.content,
         coverImage: data.coverImage,
         status: data.status,
-        publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
+        // 更新文章时，如果状态为已发布，始终将 publishedAt 设为当前时间
+        // 这样更新后的文章会出现在首页"最新文章"顶部
+        publishedAt: data.status === 'PUBLISHED' ? new Date() : null,
         categoryId: data.categoryId,
         tags: data.tagIds ? {
           create: data.tagIds.map(tagId => ({ tagId })),

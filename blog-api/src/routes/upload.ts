@@ -12,13 +12,18 @@ router.post('/', authenticate, upload.single('file'), async (req, res, next) => 
       return res.status(400).json({ message: '未选择文件' });
     }
 
+    // 构建完整 URL：优先使用 X-Forwarded-Proto（Nginx 代理后的 HTTPS），其次用 req.protocol
+    const protocol = (req.headers['x-forwarded-proto'] as string) || req.protocol;
+    const host = req.headers.host || 'localhost:3000';
+    const url = `${protocol}://${host}/uploads/${req.file.filename}`;
+
     const media = await prisma.media.create({
       data: {
         filename: req.file.filename,
         originalName: req.file.originalname,
         mimeType: req.file.mimetype,
         size: req.file.size,
-        url: `/uploads/${req.file.filename}`,
+        url,
       },
     });
 

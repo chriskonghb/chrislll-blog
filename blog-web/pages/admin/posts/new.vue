@@ -28,7 +28,14 @@ const handleSave = async (data) => {
     });
     router.push('/admin/posts');
   } catch (err) {
-    alert(err?.data?.message || '创建文章失败');
+    // 显示具体的验证错误信息
+    const errors = err?.data?.errors;
+    if (errors && errors.length > 0) {
+      const msg = errors.map(e => `${e.path?.join('.')}: ${e.message}`).join('\n');
+      alert('数据验证失败：\n' + msg);
+    } else {
+      alert(err?.data?.message || '创建文章失败');
+    }
   }
 };
 </script>

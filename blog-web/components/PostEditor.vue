@@ -142,8 +142,22 @@ const handleSubmit = () => {
   if (!data.slug) {
     data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
-  if (data.categoryId === '') data.categoryId = null;
-  if (data.publishedAt === '') data.publishedAt = null;
+  // 确保 categoryId 是数字或 null（HTML select 可能返回字符串）
+  if (data.categoryId === '' || data.categoryId === null || data.categoryId === undefined) {
+    data.categoryId = null;
+  } else {
+    data.categoryId = Number(data.categoryId);
+  }
+  if (data.publishedAt === '') {
+    data.publishedAt = null;
+  } else {
+    // Ensure the datetime string is in valid ISO format for Zod
+    data.publishedAt = new Date(data.publishedAt).toISOString();
+  }
+  // Convert tagIds to numbers (v-model checkboxes may return strings)
+  if (data.tagIds) {
+    data.tagIds = data.tagIds.map(id => Number(id));
+  }
   
   emit('save', data);
 };
