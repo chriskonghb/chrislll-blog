@@ -110,7 +110,7 @@ const route = useRoute();
 
 const { data: post, pending } = await useAsyncData(
   `post-${route.params.slug}`,
-  () => $api(`/posts/${route.params.slug}`),
+  () => $api(`/posts/${route.params.slug}?_t=${Date.now()}`),
   { server: true }
 );
 

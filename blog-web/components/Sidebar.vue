@@ -87,9 +87,10 @@
 <script setup>
 const { $api } = useApi();
 
-const { data: categories } = await useAsyncData('categories', () => $api('/categories').then(r => r.data));
-const { data: tags } = await useAsyncData('tags', () => $api('/tags').then(r => r.data));
-const { data: popularPosts } = await useAsyncData('popular', () => $api('/posts?limit=5').then(r => r.data));
+const t = Date.now();
+const { data: categories } = await useAsyncData('categories', () => $api('/categories?_t=' + t).then(r => r.data));
+const { data: tags } = await useAsyncData('tags', () => $api('/tags?_t=' + t).then(r => r.data));
+const { data: popularPosts } = await useAsyncData('popular', () => $api('/posts?limit=5&_t=' + t).then(r => r.data));
 
 const formatDate = (date) => {
   if (!date) return '';

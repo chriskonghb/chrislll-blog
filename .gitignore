@@ -5,6 +5,7 @@ node_modules/
 dist/
 .output/
 .nuxt/
+output.tar.gz
 
 # 日志
 *.log

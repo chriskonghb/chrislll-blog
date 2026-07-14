@@ -54,7 +54,7 @@ useHead({
 
 const { data: response, pending } = await useAsyncData(
   () => `posts-page-${page.value}`,
-  () => $api(`/posts?page=${page.value}&limit=${limit}`),
+  () => $api(`/posts?page=${page.value}&limit=${limit}&_t=${Date.now()}`),
   { watch: [page] }
 );
 

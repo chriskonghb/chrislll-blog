@@ -42,12 +42,12 @@ const page = ref(1);
 const limit = 10;
 
 const { data: tag } = await useAsyncData(`tag-${slug}`, () =>
-  $api(`/tags/${slug}`)
+  $api(`/tags/${slug}?_t=${Date.now()}`)
 );
 
 const { data: response } = await useAsyncData(
   () => `tag-posts-${slug}-${page.value}`,
-  () => $api(`/posts?tag=${slug}&page=${page.value}&limit=${limit}`),
+  () => $api(`/posts?tag=${slug}&page=${page.value}&limit=${limit}&_t=${Date.now()}`),
   { watch: [page] }
 );
 

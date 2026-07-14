@@ -15,6 +15,12 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
     },
   },
+  // 禁用 Nitro 服务端缓存，确保每次请求都重新渲染
+  nitro: {
+    routeRules: {
+      '/**': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0' } },
+    },
+  },
   app: {
     head: {
       charset: 'utf-8',

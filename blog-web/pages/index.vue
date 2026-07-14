@@ -137,17 +137,18 @@ useHead({
 });
 
 const { data: posts, pending } = await useAsyncData('home-posts', () =>
-  $api('/posts?limit=6').then(r => r.data).catch(() => [])
+  $api('/posts?limit=6&_t=' + Date.now()).then(r => r.data).catch(() => [])
 );
 
 // 获取统计数据
 const { data: statsData } = await useAsyncData('home-stats', async () => {
   try {
+    const t = Date.now();
     const [postsRes, catsRes, tagsRes, statsRes] = await Promise.all([
-      $api('/posts?limit=1').then(r => r.pagination?.total || 0),
-      $api('/categories').then(r => r.data?.length || 0),
-      $api('/tags').then(r => r.data?.length || 0),
-      $api('/stats').then(r => r.data?.totalViews || 0).catch(() => 0),
+      $api('/posts?limit=1&_t=' + t).then(r => r.pagination?.total || 0),
+      $api('/categories?_t=' + t).then(r => r.data?.length || 0),
+      $api('/tags?_t=' + t).then(r => r.data?.length || 0),
+      $api('/stats?_t=' + t).then(r => r.data?.totalViews || 0).catch(() => 0),
     ]);
     return { posts: postsRes, categories: catsRes, tags: tagsRes, views: statsRes };
   } catch {

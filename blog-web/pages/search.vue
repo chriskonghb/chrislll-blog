@@ -71,7 +71,7 @@ const { data: response, pending } = await useAsyncData(
   () => `search-${q.value}-${page.value}`,
   () => {
     if (!q.value) return { data: [], pagination: { total: 0, totalPages: 1 } };
-    return $api(`/search?q=${encodeURIComponent(q.value)}&page=${page.value}&limit=${limit}`);
+    return $api(`/search?q=${encodeURIComponent(q.value)}&page=${page.value}&limit=${limit}&_t=${Date.now()}`);
   },
   { watch: [q, page] }
 );

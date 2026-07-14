@@ -43,12 +43,12 @@ const page = ref(1);
 const limit = 10;
 
 const { data: category } = await useAsyncData(`category-${slug}`, () =>
-  $api(`/categories/${slug}`)
+  $api(`/categories/${slug}?_t=${Date.now()}`)
 );
 
 const { data: response } = await useAsyncData(
   () => `category-posts-${slug}-${page.value}`,
-  () => $api(`/posts?category=${slug}&page=${page.value}&limit=${limit}`),
+  () => $api(`/posts?category=${slug}&page=${page.value}&limit=${limit}&_t=${Date.now()}`),
   { watch: [page] }
 );
 
