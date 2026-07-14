@@ -5,8 +5,8 @@
       <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-100/50 to-transparent rounded-bl-full" />
       <h3 class="text-lg font-bold text-gray-900 mb-4 relative">关于我</h3>
       <div class="flex items-center gap-4 mb-4 relative">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-blue-500/20 ring-4 ring-blue-50">
-          C
+        <div class="w-16 h-16 rounded-full overflow-hidden shadow-lg shadow-blue-500/20 ring-4 ring-blue-50">
+          <img src="/chris-avatar.jpg" alt="Chris" class="w-full h-full object-cover" />
         </div>
         <div>
           <p class="font-bold text-gray-900">Chris</p>

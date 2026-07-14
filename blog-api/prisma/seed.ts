@@ -43,11 +43,9 @@ async function main() {
 
   // 创建默认标签
   const tags = await Promise.all([
-    prisma.tag.upsert({ where: { slug: 'javascript' }, update: {}, create: { name: 'JavaScript', slug: 'javascript' } }),
-    prisma.tag.upsert({ where: { slug: 'nodejs' }, update: {}, create: { name: 'Node.js', slug: 'nodejs' } }),
-    prisma.tag.upsert({ where: { slug: 'vue' }, update: {}, create: { name: 'Vue', slug: 'vue' } }),
-    prisma.tag.upsert({ where: { slug: 'nuxt' }, update: {}, create: { name: 'Nuxt', slug: 'nuxt' } }),
-    prisma.tag.upsert({ where: { slug: 'typescript' }, update: {}, create: { name: 'TypeScript', slug: 'typescript' } }),
+    prisma.tag.upsert({ where: { slug: 'english-reading' }, update: {}, create: { name: '英文阅读理解', slug: 'english-reading' } }),
+    prisma.tag.upsert({ where: { slug: 'ai-frontier' }, update: {}, create: { name: '人工智能前沿', slug: 'ai-frontier' } }),
+    prisma.tag.upsert({ where: { slug: 'telling-china' }, update: {}, create: { name: '用英文讲好中国', slug: 'telling-china' } }),
   ]);
 
   console.log('标签已创建:', tags.map(t => t.name).join(', '));
@@ -61,7 +59,7 @@ async function main() {
       content: '<p>欢迎来到我的博客！这是一个记录技术探索、学习心得与生活感悟的空间。希望你能在这里找到有价值的内容。</p><p>我将会分享关于技术、编程、学习方法以及个人成长方面的话题。欢迎随时浏览和留言。</p>',
       status: 'PUBLISHED' as const,
       categoryId: categories[1].id,
-      tagIds: [tags[4].id],
+      tagIds: [tags[0].id],
     },
     {
       title: '用 Vue 和 Node.js 从零搭建这个博客',
@@ -70,7 +68,7 @@ async function main() {
       content: '<p>在这篇文章中，我将分享如何从零开始搭建这个博客。技术栈如下：</p><ul><li>Vue 3 + Nuxt 3 用于前端 SSR</li><li>Express + TypeScript 用于后端 API</li><li>MySQL 配合 Prisma ORM</li><li>Tailwind CSS 用于样式</li></ul><p>后续还会分享更多技术细节，敬请期待！</p>',
       status: 'PUBLISHED' as const,
       categoryId: categories[0].id,
-      tagIds: [tags[0].id, tags[1].id, tags[2].id, tags[3].id, tags[4].id],
+      tagIds: [tags[0].id, tags[1].id],
     },
     {
       title: '我的 2026 年学习计划',
@@ -105,7 +103,7 @@ async function main() {
     { key: 'siteTitle', value: 'Chris 博客' },
     { key: 'siteDescription', value: '一个分享技术探索、学习心得与生活感悟的个人博客。' },
     { key: 'siteKeywords', value: '技术, 博客, 编程, 学习, 生活' },
-    { key: 'footerText', value: 'Copyright 2026 Chris. All rights reserved.' },
+    { key: 'footerText', value: 'Copyright 2026 Chris. All rights reserved. 吉ICP备2025025523号-2' },
     { key: 'postsPerPage', value: '10' },
   ];
 
