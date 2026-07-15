@@ -4,6 +4,29 @@ import { authenticate } from '../middlewares/auth';
 
 const router = Router();
 
+// Public: Basic stats for frontend display
+router.get('/', async (_req, res, next) => {
+  try {
+    const [totalPosts, totalCategories, totalTags, totalViews] = await Promise.all([
+      prisma.post.count({ where: { status: 'PUBLISHED' } }),
+      prisma.category.count(),
+      prisma.tag.count(),
+      prisma.post.aggregate({ _sum: { viewCount: true } }),
+    ]);
+
+    res.json({
+      data: {
+        totalPosts,
+        totalCategories,
+        totalTags,
+        totalViews: totalViews._sum.viewCount || 0,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Protected: Overview stats
 router.get('/overview', authenticate, async (_req, res, next) => {
   try {
