@@ -52,7 +52,7 @@ useHead({
   title: '全部文章 - Chris 博客',
 });
 
-const { data: response, pending } = await useAsyncData(
+const { data: response, pending, refresh: refreshPosts } = await useAsyncData(
   () => `posts-page-${page.value}`,
   () => $api(`/posts?page=${page.value}&limit=${limit}&_t=${Date.now()}`).catch(() => ({ data: [], pagination: { total: 0, totalPages: 1 } })),
   { watch: [page] }
@@ -60,6 +60,11 @@ const { data: response, pending } = await useAsyncData(
 
 const posts = computed(() => response.value?.data || []);
 const totalPages = computed(() => response.value?.pagination?.totalPages || 1);
+
+// 从其他页面导航回来时，强制刷新数据
+onMounted(() => {
+  refreshPosts();
+});
 
 watch(page, () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -136,12 +136,12 @@ useHead({
   ],
 });
 
-const { data: posts, pending } = await useAsyncData('home-posts', () =>
+const { data: posts, pending, refresh: refreshPosts } = await useAsyncData('home-posts', () =>
   $api('/posts?limit=6&_t=' + Date.now()).then(r => r.data).catch(() => [])
 );
 
 // 获取统计数据
-const { data: statsData } = await useAsyncData('home-stats', async () => {
+const { data: statsData, refresh: refreshStats } = await useAsyncData('home-stats', async () => {
   try {
     const t = Date.now();
     const [postsRes, catsRes, tagsRes, statsRes] = await Promise.all([
@@ -154,6 +154,12 @@ const { data: statsData } = await useAsyncData('home-stats', async () => {
   } catch {
     return { posts: 0, categories: 0, tags: 0, views: 0 };
   }
+});
+
+// 从后台导航回前台时，强制刷新数据（避免客户端缓存旧数据）
+onMounted(() => {
+  refreshPosts();
+  refreshStats();
 });
 
 const stats = computed(() => statsData.value || { posts: 0, categories: 0, tags: 0, views: 0 });
