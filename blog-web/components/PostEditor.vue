@@ -142,6 +142,10 @@ const handleSubmit = () => {
   if (!data.slug) {
     data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
+  // 纯中文标题会导致 slug 为空，用时间戳兜底
+  if (!data.slug || data.slug === '') {
+    data.slug = 'post-' + Date.now();
+  }
   // 确保 categoryId 是数字或 null（HTML select 可能返回字符串）
   if (data.categoryId === '' || data.categoryId === null || data.categoryId === undefined) {
     data.categoryId = null;
