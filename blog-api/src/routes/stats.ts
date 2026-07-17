@@ -34,36 +34,52 @@ router.get('/overview', authenticate, async (_req, res, next) => {
     const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    const [
-      totalPosts,
-      publishedPosts,
-      draftPosts,
-      totalCategories,
-      totalTags,
-      totalComments,
-      totalViews,
-      viewsLast7Days,
-      viewsLast30Days,
-    ] = await Promise.all([
-      prisma.post.count(),
-      prisma.post.count({ where: { status: 'PUBLISHED' } }),
-      prisma.post.count({ where: { status: 'DRAFT' } }),
-      prisma.category.count(),
-      prisma.tag.count(),
-      prisma.comment.count(),
-      prisma.post.aggregate({ _sum: { viewCount: true } }),
-      prisma.viewLog.count({ where: { visitedAt: { gte: last7Days } } }),
-      prisma.viewLog.count({ where: { visitedAt: { gte: last30Days } } }),
-    ]);
+    // 分别执行查询，避免一个失败导致全部失败
+    let totalPosts = 0, publishedPosts = 0, draftPosts = 0;
+    let totalCategories = 0, totalTags = 0, totalComments = 0;
+    let totalViews = 0, viewsLast7Days = 0, viewsLast30Days = 0;
+    let dailyViews: any = [];
 
-    // Daily views for last 7 days
-    const dailyViews = await prisma.$queryRaw`
-      SELECT DATE(visited_at) as date, COUNT(*) as count
-      FROM view_logs
-      WHERE visited_at >= ${last7Days}
-      GROUP BY DATE(visited_at)
-      ORDER BY date ASC
-    `;
+    try { totalPosts = await prisma.post.count(); }
+    catch (e: any) { console.error('[stats] totalPosts error:', e?.message || e); }
+
+    try { publishedPosts = await prisma.post.count({ where: { status: 'PUBLISHED' } }); }
+    catch (e: any) { console.error('[stats] publishedPosts error:', e?.message || e); }
+
+    try { draftPosts = await prisma.post.count({ where: { status: 'DRAFT' } }); }
+    catch (e: any) { console.error('[stats] draftPosts error:', e?.message || e); }
+
+    try { totalCategories = await prisma.category.count(); }
+    catch (e: any) { console.error('[stats] totalCategories error:', e?.message || e); }
+
+    try { totalTags = await prisma.tag.count(); }
+    catch (e: any) { console.error('[stats] totalTags error:', e?.message || e); }
+
+    try { totalComments = await prisma.comment.count(); }
+    catch (e: any) { console.error('[stats] totalComments error:', e?.message || e); }
+
+    try {
+      const viewsResult = await prisma.post.aggregate({ _sum: { viewCount: true } });
+      totalViews = viewsResult._sum.viewCount || 0;
+    }
+    catch (e: any) { console.error('[stats] totalViews error:', e?.message || e); }
+
+    try { viewsLast7Days = await prisma.viewLog.count({ where: { visitedAt: { gte: last7Days } } }); }
+    catch (e: any) { console.error('[stats] viewsLast7Days error:', e?.message || e); }
+
+    try { viewsLast30Days = await prisma.viewLog.count({ where: { visitedAt: { gte: last30Days } } }); }
+    catch (e: any) { console.error('[stats] viewsLast30Days error:', e?.message || e); }
+
+    try {
+      dailyViews = await prisma.$queryRaw`
+        SELECT DATE(visited_at) as date, COUNT(*) as count
+        FROM view_logs
+        WHERE visited_at >= ${last7Days}
+        GROUP BY DATE(visited_at)
+        ORDER BY date ASC
+      `;
+    }
+    catch (e: any) { console.error('[stats] dailyViews error:', e?.message || e); }
 
     res.json({
       totalPosts,
@@ -72,7 +88,7 @@ router.get('/overview', authenticate, async (_req, res, next) => {
       totalCategories,
       totalTags,
       totalComments,
-      totalViews: totalViews._sum.viewCount || 0,
+      totalViews,
       viewsLast7Days,
       viewsLast30Days,
       dailyViews,
