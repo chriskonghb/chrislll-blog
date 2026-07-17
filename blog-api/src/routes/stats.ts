@@ -71,13 +71,19 @@ router.get('/overview', authenticate, async (_req, res, next) => {
     catch (e: any) { console.error('[stats] viewsLast30Days error:', e?.message || e); }
 
     try {
-      dailyViews = await prisma.$queryRaw`
+      const rawDailyViews = await prisma.$queryRaw`
         SELECT DATE(visited_at) as date, COUNT(*) as count
         FROM view_logs
         WHERE visited_at >= ${last7Days}
         GROUP BY DATE(visited_at)
         ORDER BY date ASC
       `;
+      // Prisma $queryRaw 返回的 COUNT(*) 是 BigInt，需要转换为 Number
+      // 否则 JSON.stringify 会报错：TypeError: Do not know how to serialize a BigInt
+      dailyViews = (rawDailyViews as any[]).map((row: any) => ({
+        date: row.date,
+        count: Number(row.count),
+      }));
     }
     catch (e: any) { console.error('[stats] dailyViews error:', e?.message || e); }
 
