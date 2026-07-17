@@ -84,7 +84,7 @@ const searchQuery = ref('');
 const { data: response, refresh } = await useAsyncData(
   () => `admin-posts-${page.value}-${statusFilter.value}`,
   () => $api(`/posts/admin/list?page=${page.value}&status=${statusFilter.value}`),
-  { watch: [page, statusFilter] }
+  { watch: [page, statusFilter], server: false }
 );
 
 const posts = computed(() => response.value?.data || []);

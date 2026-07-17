@@ -52,7 +52,7 @@ definePageMeta({
 
 const { $api } = useApi();
 
-const { data: settings } = await useAsyncData('settings', () => $api('/settings'));
+const { data: settings } = await useAsyncData('settings', () => $api('/settings'), { server: false });
 
 const form = ref({
   siteTitle: settings.value?.siteTitle || 'Chris Blog',

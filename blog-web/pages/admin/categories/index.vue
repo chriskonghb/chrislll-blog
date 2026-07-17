@@ -71,7 +71,7 @@ definePageMeta({
 const { $api } = useApi();
 
 const { data: categories, refresh } = await useAsyncData('admin-categories', () =>
-  $api('/categories').then(r => r.data)
+  $api('/categories').then(r => r.data), { server: false }
 );
 
 const showModal = ref(false);

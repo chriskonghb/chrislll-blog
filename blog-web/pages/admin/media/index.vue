@@ -46,7 +46,7 @@ definePageMeta({
 const { $api } = useApi();
 
 const { data: mediaData, refresh } = await useAsyncData('admin-media', () =>
-  $api('/upload').then(r => r.data)
+  $api('/upload').then(r => r.data), { server: false }
 );
 
 const media = computed(() => mediaData.value || []);

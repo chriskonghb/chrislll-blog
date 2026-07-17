@@ -15,14 +15,17 @@ export const useApi = () => {
     return null;
   };
 
-  const headers = () => {
-    const token = getToken();
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  };
-
   const $api = $fetch.create({
     baseURL,
-    headers: headers(),
+    // 关键修复：用 onRequest 钩子每次请求时动态获取 token
+    // 而不是在 $fetch.create 时固化 headers（那时 token 可能尚未加载）
+    onRequest({ options }) {
+      const token = getToken();
+      if (token) {
+        options.headers = options.headers || {};
+        options.headers.set('Authorization', `Bearer ${token}`);
+      }
+    },
     onResponseError({ response }) {
       if (response.status === 401) {
         if (process.client) {

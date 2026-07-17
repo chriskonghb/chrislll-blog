@@ -27,7 +27,7 @@ const { data: post } = await useAsyncData(`post-edit-${route.params.id}`, () =>
     const found = r.data.find(p => p.id === parseInt(route.params.id));
     if (!found) throw new Error('文章不存在');
     return found;
-  })
+  }), { server: false }
 );
 
 const handleSave = async (data) => {

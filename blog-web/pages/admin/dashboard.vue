@@ -111,8 +111,9 @@ definePageMeta({
 
 const { $api } = useApi();
 
-const { data: stats } = await useAsyncData('stats', () => $api('/stats/overview'));
-const { data: recentPostsData } = await useAsyncData('recent-posts', () => $api('/posts/admin/list?limit=5'));
+// 后台页面跳过 SSR 数据获取，token 仅在客户端 localStorage 中存在
+const { data: stats } = await useAsyncData('stats', () => $api('/stats/overview'), { server: false });
+const { data: recentPostsData } = await useAsyncData('recent-posts', () => $api('/posts/admin/list?limit=5'), { server: false });
 
 const recentPosts = computed(() => recentPostsData.value?.data || []);
 

@@ -62,7 +62,7 @@ definePageMeta({
 const { $api } = useApi();
 
 const { data: tags, refresh } = await useAsyncData('admin-tags', () =>
-  $api('/tags').then(r => r.data)
+  $api('/tags').then(r => r.data), { server: false }
 );
 
 const showModal = ref(false);
